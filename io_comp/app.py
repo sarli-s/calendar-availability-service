@@ -6,38 +6,36 @@ import sys
 from datetime import timedelta
 from typing import List
 
-# ייבוא הרכיבים מהחבילה הפנימית
+# Import components from the internal package
 from .calendar_service import CalendarService
 from io_comp.data_loader import CSVEventProvider
 
 def find_available_slots(person_list: List[str], event_duration: timedelta) -> List[str]:
-    """
-    המימוש המרכזי שנדרש בתרגיל.
-    מחבר בין טעינת הנתונים מה-CSV לבין לוגיקת החישוב של הסרביס.
-    """
-    # חישוב נתיב דינמי לקובץ ה-CSV (נמצא רמה אחת מעל תיקיית io_comp)
+    """ Main implementation for the exercise. 
+    Integrates CSV data loading with the service's calculation logic. """
+    # Calculate dynamic path to the CSV file (located one level above the io_comp directory)
     base_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     csv_path = os.path.join(base_path, 'resources', 'calendar.csv')
     
-    # 1. יצירת ספק הנתונים (Data Provider)
+    # 1. Initialize the data provider
     provider = CSVEventProvider(csv_path)
     
-    # 2. טעינת האירועים
+    # 2. Load events
     try:
         all_events = provider.get_events()
     except FileNotFoundError:
         print(f"Error: Could not find calendar file at {csv_path}")
         return []
 
-    # 3. שימוש בסרביס לביצוע החישוב
+    # 3. Use the service to perform the calculation
     service = CalendarService()
     return service.find_available_slots(all_events, person_list, event_duration)
 
 
 def main():
-    """נקודת הכניסה להרצה של האפליקציה"""
-      
-    # 1. קבלת שמות המשתתפים (מופרדים בפסיק)
+    """Entry point for application execution"""
+
+    # 1. Get attendee names (comma-separated)
     people_input = input("Enter attendees names (comma separated, e.g. Alice, Jack): ")
     attendees = [name.strip() for name in people_input.split(",") if name.strip()]
     
@@ -45,7 +43,7 @@ def main():
         print("No attendees entered. Exiting.")
         return
 
-    # 2. קבלת אורך הפגישה (עם ברירת מחדל)
+    # 2. Get meeting duration (with default value)
     try:
         duration_input = input("Enter meeting duration in minutes [default 60]: ")
         duration_mins = int(duration_input) if duration_input.strip() else 60

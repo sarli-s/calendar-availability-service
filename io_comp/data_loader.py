@@ -4,12 +4,12 @@ from .models import Event, TimeSlot
 from datetime import datetime
 
 class EventProvider:
-    """ממשק בסיסי לטעינת אירועים"""
+    """Base interface for loading events"""
     def get_events(self) -> List[Event]:
         raise NotImplementedError
 
 class CSVEventProvider(EventProvider):
-    """מימוש ספציפי עבור קובץ CSV"""
+    """CSV-specific implementation for event loading"""
     def __init__(self, file_path: str):
         self.file_path = file_path
 

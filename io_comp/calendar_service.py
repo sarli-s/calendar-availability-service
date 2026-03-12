@@ -8,32 +8,32 @@ class CalendarService:
         self.day_end = day_end
         
     def find_available_slots(self, events: List[Event], person_list: List[str], duration: timedelta) -> List[str]:
-        # 1. סינון אירועים רלוונטיים
+        # 1. Filter relevant events
         relevant_slots = [e.slot for e in events if e.person_name in person_list]
         
-        # 2. מיזוג אירועים חופפים
+        # 2. Merge overlapping events
         merged_busy = self._merge_intervals(relevant_slots)
 
-        # 3. מציאת חלונות פנויים
+        # 3. Find available time slots
         available_ranges = []
         duration_mins = duration.total_seconds() / 60
         current_time = self.day_start
 
         for busy_slot in merged_busy:
-            # התעלמות מאירועים שמסתיימים לפני תחילת היום או מתחילים אחרי סוף היום
+            # Ignore events ending before day start or starting after day end
             if busy_slot.end <= self.day_start:
                 continue
             if busy_slot.start >= self.day_end:
                 break
 
-            # חישוב הפער בין הזמן הנוכחי לתחילת הפגישה הבאה
+            # Calculate the gap between current time and the next meeting's start
             gap_start = max(current_time, self.day_start)
             gap_end = min(busy_slot.start, self.day_end)
             
             gap_duration = self._diff_minutes(gap_start, gap_end)
             
             if gap_duration >= duration_mins:
-                # חישוב נקודת ההתחלה האחרונה האפשרית
+                # Calculate the latest possible starting point
                 latest_start = self._add_minutes(gap_end, -int(duration_mins))
                 
                 if gap_start == latest_start:
@@ -41,11 +41,11 @@ class CalendarService:
                 else:
                     available_ranges.append(f"{gap_start.strftime('%H:%M')} - {latest_start.strftime('%H:%M')}")
             
-            # עדכון הזמן הנוכחי לסוף הפגישה (כדי לא לחזור אחורה)
+            # Update current time to the end of the meeting (to prevent backward jumps)
             if busy_slot.end > current_time:
                 current_time = busy_slot.end
 
-        # בדיקה אחרונה מסיבת הסיום ועד סוף היום (19:00)
+        # Final check from the last event until the end of the day (19:00)
         final_check_start = max(current_time, self.day_start)
         if final_check_start < self.day_end:
             final_gap = self._diff_minutes(final_check_start, self.day_end)
