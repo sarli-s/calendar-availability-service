@@ -100,6 +100,7 @@ Good luck!
 ## 🚀 My Implementation Notes
 
 I designed this solution with **scalability**, **testability**, and **clean code** principles in mind.
+Note on Return Type: I adjusted the return type to List[str] to properly format and support both time-ranges (e.g., '07:00 - 18:00') and exact-match timestamps as requested.
 
 ### 🏗️ Architecture
 * **Decoupled Layers:** I separated the data-loading logic from the core algorithm. The `CSVEventProvider` handles file I/O, while the `CalendarService` focuses purely on scheduling logic.

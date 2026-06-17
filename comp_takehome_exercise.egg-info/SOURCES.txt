@@ -8,5 +8,8 @@ comp_takehome_exercise.egg-info/requires.txt
 comp_takehome_exercise.egg-info/top_level.txt
 io_comp/__init__.py
 io_comp/app.py
+io_comp/calendar_service.py
+io_comp/data_loader.py
+io_comp/models.py
 tests/__init__.py
 tests/test_app.py

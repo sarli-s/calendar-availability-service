@@ -9,7 +9,7 @@ from io_comp.calendar_service import CalendarService
 @pytest.fixture
 def service():
     """Creates a service instance for each test with default hours (07:00-19:00)"""
-    return CalendarService()
+    return CalendarService(day_start=time(7, 0), day_end=time(19, 0))
 
 def test_full_day_available(service):
     """Verify that a completely empty day returns the full day window"""

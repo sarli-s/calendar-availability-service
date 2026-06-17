@@ -3,12 +3,23 @@ This is the App entry point
 """
 import os
 import sys
-from datetime import timedelta
+from dotenv import load_dotenv
+from datetime import timedelta,datetime, time
 from typing import List
 
 # Import components from the internal package
-from .calendar_service import CalendarService
+from io_comp.calendar_service import CalendarService
 from io_comp.data_loader import CSVEventProvider
+
+
+load_dotenv()
+
+
+def get_config_time(env_var: str, default_val: str) -> time:
+    """Helper function to convert a string from .env to a time object"""
+    time_str = os.getenv(env_var, default_val)
+    return datetime.strptime(time_str, "%H:%M").time()
+
 
 def find_available_slots(person_list: List[str], event_duration: timedelta) -> List[str]:
     """ Main implementation for the exercise. 
@@ -26,9 +37,13 @@ def find_available_slots(person_list: List[str], event_duration: timedelta) -> L
     except FileNotFoundError:
         print(f"Error: Could not find calendar file at {csv_path}")
         return []
+    
+    # 3. Load working hours from system settings
+    start = get_config_time("START_HOUR", "07:00")
+    end = get_config_time("END_HOUR", "19:00")
 
-    # 3. Use the service to perform the calculation
-    service = CalendarService()
+    # 4. Use the service to perform the calculation
+    service = CalendarService(day_start=start,day_end=end)
     return service.find_available_slots(all_events, person_list, event_duration)
 
 

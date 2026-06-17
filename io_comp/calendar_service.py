@@ -3,9 +3,10 @@ from datetime import time, datetime, timedelta
 from .models import TimeSlot, Event
 
 class CalendarService:
-    def __init__(self, day_start=time(7, 0), day_end=time(19, 0)):
+    def __init__(self, day_start:time, day_end:time):
         self.day_start = day_start
         self.day_end = day_end
+
         
     def find_available_slots(self, events: List[Event], person_list: List[str], duration: timedelta) -> List[str]:
         # 1. Filter relevant events

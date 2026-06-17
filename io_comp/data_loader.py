@@ -3,10 +3,12 @@ from typing import List
 from .models import Event, TimeSlot
 from datetime import datetime
 
+
 class EventProvider:
     """Base interface for loading events"""
     def get_events(self) -> List[Event]:
         raise NotImplementedError
+
 
 class CSVEventProvider(EventProvider):
     """CSV-specific implementation for event loading"""
